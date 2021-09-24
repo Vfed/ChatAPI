@@ -25,12 +25,6 @@ namespace ChatAPI.Controllers
         {
             return _dbService.ChatUsers.ToList();
         }
-        [HttpGet("serial")]
-        public string SerializeChatUser<T>(T text)
-        {
-            string value = JsonSerializer.Serialize(text);
-            return value;
-        }
 
         [HttpPost("add")]
         public IEnumerable<ChatUser> AddChatUser(ChatUserDto dto)
@@ -52,11 +46,11 @@ namespace ChatAPI.Controllers
             return _dbService.ChatUsers.ToList();
         }
         [HttpGet("find")]
-        public string FindUser([FromQuery] string Username)
+        public ChatUser FindUser([FromQuery] string Username)
         {
             var user = _dbService.ChatUsers
                 .FirstOrDefault(x => x.Username == Username);
-            return SerializeChatUser(user);
+            return user;
         }
 
     }
