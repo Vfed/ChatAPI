@@ -25,6 +25,13 @@ namespace ChatAPI.Controllers
         {
             return _dbService.ChatUsers.ToList();
         }
+        [HttpGet("getallexeptme")]
+        public IEnumerable<ChatUser> FindAllExeptMeUser([FromQuery] ChatUserDto userDto)
+        {
+            var user = _dbService.ChatUsers
+                .Where(x => x.Username != userDto.Username);
+            return user;
+        }
 
         [HttpPost("add")]
         public IEnumerable<ChatUser> AddChatUser(ChatUserDto dto)

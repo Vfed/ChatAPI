@@ -38,6 +38,8 @@ namespace ChatAPI.Controllers
                 ChatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == UserReaderId),
                 Chat = chat
             });
+            _dbService.Chats.Add(chat);
+            _dbService.SaveChanges();
             return chat;
         }
         [HttpPost("adduser")]
