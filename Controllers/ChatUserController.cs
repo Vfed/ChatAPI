@@ -34,7 +34,7 @@ namespace ChatAPI.Controllers
         }
 
         [HttpPost("add")]
-        public IEnumerable<ChatUser> AddChatUser(ChatUserDto dto)
+        public void AddChatUser(ChatUserDto dto)
         {
             ChatUser newUser;
             var user = _dbService.ChatUsers
@@ -50,7 +50,7 @@ namespace ChatAPI.Controllers
                 _dbService.ChatUsers.Add(newUser);
                 _dbService.SaveChanges();
             }
-            return _dbService.ChatUsers.ToList();
+            return;
         }
         [HttpGet("find")]
         public ChatUser FindUser([FromQuery] string Username)

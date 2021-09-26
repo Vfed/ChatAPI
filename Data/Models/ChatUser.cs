@@ -9,6 +9,6 @@ namespace ChatAPI.Data.Models
     {
         [Key] public Guid Id { get; set; }
         public string Username { get; set; }
-        public List<ChatsList> Chats { get; set; }
+        public List<ChatsList> ChatLists { get; set; }
     }
 }

@@ -4,14 +4,16 @@ using ChatAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChatAPI.Migrations
 {
     [DbContext(typeof(DbService))]
-    partial class DbServiceModelSnapshot : ModelSnapshot
+    [Migration("20210924064304_ChatUpdate")]
+    partial class ChatUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,7 +105,7 @@ namespace ChatAPI.Migrations
                         .HasForeignKey("ChatId");
 
                     b.HasOne("ChatAPI.Data.Models.ChatUser", "ChatUser")
-                        .WithMany("ChatLists")
+                        .WithMany("Chats")
                         .HasForeignKey("ChatUserId");
                 });
 
