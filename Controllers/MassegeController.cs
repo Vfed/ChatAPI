@@ -23,8 +23,7 @@ namespace ChatAPI.Controllers
         public IEnumerable<Message> GetMessagesUser(Guid ChatId, DateTime dateTime)
         {
             List<Message> messages = new List<Message>();
-            messages.Union(_dbService.Messages.Where(x => x.Chat.ChatId == ChatId));
-
+            messages = _dbService.Messages.Where(x => x.Chat.ChatId == ChatId).ToList();
             return messages;
         }
         [HttpPost("add")]
@@ -39,6 +38,12 @@ namespace ChatAPI.Controllers
                 UserName = messageDto.UserName
             };
             _dbService.Messages.Add(message);
+            Chat chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == messageDto.ChatId);
+            if (chat.LastData > messageDto.CurrentTime)
+            {
+                chat.LastData = messageDto.CurrentTime;
+            }
+            _dbService.Chats.Update(chat);
             _dbService.SaveChanges();
             return message;
         }
