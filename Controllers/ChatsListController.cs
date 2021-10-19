@@ -27,44 +27,66 @@ namespace ChatAPI.Controllers
             return chats;
         }
         [HttpGet("gettime")]
-        public DateTime GetCurrentDataChats(Guid userId,Guid chatId)
+        public DateTime GetCurrentDataChats([FromQuery]Guid userId,Guid chatId)
         {
             DateTime date = new DateTime();
             date = _dbService.ChatsList.FirstOrDefault(x => x.Chat.ChatId == chatId && x.ChatUser.Id == userId).Current;
             return date;
         }
-        //[HttpPost("add")]
-        //public void AddUserToChat(ChatAddNewUserDto dto)
-        //{
-        //    ChatsList chatlist = new ChatsList();
+        [HttpPost("add")]
+        public void AddUserToChat(ChatAddNewUserDto dto)
+        {
+            ChatsList chatlist = new ChatsList();
 
-        //    chatlist = _dbService.ChatsList.FirstOrDefault(x => x.ChatUser.Id == dto.UserId && x.Chat.ChatId == dto.ChatId);
+            chatlist = _dbService.ChatsList.FirstOrDefault(x => x.ChatUser.Id == dto.UserId && x.Chat.ChatId == dto.ChatId);
 
-        //    if (chatlist == null)
-        //    {
-        //        ChatUser user = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId);
-        //        chatlist = new ChatsList()
-        //        {
-        //            Id = Guid.NewGuid(),
-        //            Chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == dto.ChatId),
-        //            ChatUser = user,
-        //            Current = DateTime.Now
-        //        };
-                
-        //        if (user.ChatLists == null)
-        //        {
-        //            user.ChatLists = new List<ChatsList>();
-        //        }
-        //        _dbService.ChatUsers.Update(user);
-        //        _dbService.SaveChanges();
-                
-        //        user.ChatLists.Add(chatlist);
+            if (chatlist != null)
+            {
+                return;
+            }
+            else 
+            {
+                chatlist = new ChatsList()
+                {
+                    Id = Guid.NewGuid(),
+                    Chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == dto.ChatId),
+                    ChatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId),
+                    Current = DateTime.Now
+                };
+                _dbService.ChatsList.Add(chatlist);
+                _dbService.SaveChanges();
 
-        //        _dbService.ChatUsers.Update(user);
-        //        _dbService.SaveChanges();
-        //    }
-        //    return;
-        //}
+                ChatUser chatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId);
+                chatUser.ChatLists.Add(chatlist);
+                _dbService.ChatUsers.Update(chatUser);
+                _dbService.SaveChanges();
+            }
+            //{
+            //    ChatUser user = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId);
+
+            //    if (user.ChatLists == null)
+            //    {
+            //        user.ChatLists = new List<ChatsList>();
+
+            //        _dbService.ChatUsers.Update(user);
+            //        _dbService.SaveChanges();
+            //    }
+
+            //    chatlist = new ChatsList()
+            //    {
+            //        Id = Guid.NewGuid(),
+            //        Chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == dto.ChatId),
+            //        ChatUser = user,
+            //        Current = DateTime.Now
+            //    };
+            //    _dbService.ChatsList.Add(chatlist);
+            //    _dbService.SaveChanges();
+            //    user.ChatLists.Add(chatlist);
+            //    _dbService.ChatUsers.Update(user);
+            //    _dbService.SaveChanges();
+            //}
+            return;
+        }
 
     }
 }

@@ -32,31 +32,16 @@ namespace ChatAPI.Controllers
         public Chat AddChat(ChatAddDto dto)
         {
             Chat chat = null;
-            List<Chat> chats1 = _dbService.ChatsList.Include(x => x.ChatUser).Include(x => x.Chat).Where(x => x.ChatUser.Id == dto.UserId1).Select(x => x.Chat).ToList();
-            List<Chat> chats2 = _dbService.ChatsList.Include(x => x.ChatUser).Include(x => x.Chat).Where(x => x.ChatUser.Id == dto.UserId2).Select(x => x.Chat).ToList();
-            bool chkiquel = false;
-            foreach (Chat item1 in chats1)
-            {
-                foreach (Chat item2 in chats2)
-                {
-                    if (item1.ChatId == item2.ChatId)
-                    {
-                        chkiquel = true;
-                        break;
-                    }
-                }
-                if (chkiquel) break;
-            }
             
-            if (!chkiquel)
-            {
+            
+            
                 ChatUser user1 = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId1);
                 ChatUser user2 = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId2);
                 chat = new Chat
                 {
                     ChatId = Guid.NewGuid(),
                     ChatName = user1.Username + " / " + user2.Username,
-                    LastData = DateTime.Today
+                    LastData = DateTime.Now
                 };
                 _dbService.Chats.Add(chat);
                 _dbService.SaveChanges();
@@ -95,7 +80,7 @@ namespace ChatAPI.Controllers
                 _dbService.ChatUsers.Update(user1);
                 _dbService.ChatUsers.Update(user2);
                 _dbService.SaveChanges();
-            }
+            
             return chat;
         }
         [HttpPost("adduser")]
@@ -121,7 +106,7 @@ namespace ChatAPI.Controllers
         public IEnumerable<ChatUser> GetChatUsersChats(Guid ChatId)
         {
             List<ChatUser> chats = null;
-            chats.Union(_dbService.ChatsList.Where(x => x.Chat.ChatId == ChatId).Select(x => x.ChatUser).ToList());
+            chats= _dbService.ChatsList.Where(x => x.Chat.ChatId == ChatId).Select(x => x.ChatUser).ToList();
             return chats;
         }
         //Change Chat name
