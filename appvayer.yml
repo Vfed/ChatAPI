@@ -1,6 +1,6 @@
 test_script:
   - cmd: ECHO this is batch
-  
+
 Configuration: Release
 
 before_build:
