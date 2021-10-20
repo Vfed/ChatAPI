@@ -1,6 +1,3 @@
-test_script:
-  - cmd: ECHO this is batch
-
 Configuration: Release
 
 before_build:
@@ -9,3 +6,6 @@ before_build:
  build:
   verbosity: minimal
   publish_wap: true
+
+test_script:
+  - cmd: ECHO this is batch
