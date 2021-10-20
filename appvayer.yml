@@ -1,5 +1,11 @@
 Configuration: Release
 
+- task: UseDotNet@2
+  displayName: 'Use dotnet sdk 3.x'
+  inputs:
+    version: 3.x
+    includePreviewVersions: true
+    
 before_build:
   - cmd: ECHO this is batch
   - ps: Write-Host "This is PowerShell"
