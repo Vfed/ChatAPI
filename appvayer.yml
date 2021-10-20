@@ -1,6 +1,11 @@
 Configuration: Release
 
 before_build:
+  - cmd: ECHO this is batch
+  - ps: Write-Host "This is PowerShell"
+  - pwsh: Write-Host "This is PowerShell Core"
+  
+before_build:
   - nuget restore
  
 build:
