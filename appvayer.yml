@@ -1,11 +1,11 @@
-Configuration: Release
-
 before_build:
   - nuget restore
  
- build:
+build:
   verbosity: minimal
   publish_wap: true
+
+Configuration: Release
 
 test_script:
   - cmd: ECHO this is batch
