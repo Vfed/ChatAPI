@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using ChatAPI.Data.Dto;
 using ChatAPI.Data.Models;
+using ChatAPI.Servises.Abstract;
 
 namespace ChatAPI.Controllers
 {
@@ -14,38 +15,21 @@ namespace ChatAPI.Controllers
     [ApiController]
     public class MassegeController : ControllerBase
     {
-        private readonly DbService _dbService;
-        public MassegeController(DbService dbService)
+        private readonly IMessageAction _messageAction;
+        public MassegeController(IMessageAction messageAction)
         {
-            _dbService = dbService;
+            _messageAction = messageAction;
         }
+
         [HttpGet("get")]
-        public IEnumerable<Message> GetMessagesUser(Guid ChatId, DateTime dateTime)
+        public IEnumerable<Message> GetMessagesUser(Guid chatId, DateTime dateTime)
         {
-            List<Message> messages = new List<Message>();
-            messages = _dbService.Messages.Where(x => x.Chat.ChatId == ChatId).ToList();
-            return messages;
+            return _messageAction.GetMessagesUser(chatId,dateTime);
         }
         [HttpPost("add")]
         public Message AddMessagesUser(MassegeDto messageDto)
         {
-            Message message = new Message()
-            {
-                Id = Guid.NewGuid(),
-                Chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == messageDto.ChatId),
-                Massege = messageDto.Massege,
-                CurrentTime = messageDto.CurrentTime,
-                UserName = messageDto.UserName
-            };
-            _dbService.Messages.Add(message);
-            Chat chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == messageDto.ChatId);
-            if (chat.LastData > messageDto.CurrentTime)
-            {
-                chat.LastData = messageDto.CurrentTime;
-            }
-            _dbService.Chats.Update(chat);
-            _dbService.SaveChanges();
-            return message;
+            return _messageAction.AddMessagesUser(messageDto);
         }
     }
 }

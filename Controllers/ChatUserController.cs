@@ -7,6 +7,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ChatAPI.Data.Models;
 using ChatAPI.Data.Dto;
+
+using ChatAPI.Servises.Abstract;
+using ChatAPI.Servises.Specific;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatAPI.Controllers
@@ -15,50 +19,32 @@ namespace ChatAPI.Controllers
     [ApiController]
     public class ChatUserController : ControllerBase
     {
-        private readonly DbService _dbService;
-        public ChatUserController(DbService dbService)
+        private readonly IChatUserAction _chatUserAction;
+        public ChatUserController(IChatUserAction chatUserAction)
         {
-            _dbService = dbService;
+            _chatUserAction = chatUserAction;
         }
         [HttpGet]
         public IEnumerable<ChatUser> GetChatUser()
         {
-            return _dbService.ChatUsers.Include(x => x.ChatLists).ToList();
+            return _chatUserAction.GetChatUser();
         }
         [HttpGet("getallexeptme")]
         public IEnumerable<ChatUser> FindAllExeptMeUser([FromQuery]  ChatUserDto userDto)
         {
-            var user = _dbService.ChatUsers
-                .Where(x => x.Username != userDto.Username);
-            return user;
+            return _chatUserAction.FindAllExeptMeUser(userDto);
         }
 
         [HttpPost("add")]
         public void AddChatUser(ChatUserDto dto)
         {
-            ChatUser newUser;
-            var user = _dbService.ChatUsers
-                .FirstOrDefault(x => x.Username == dto.Username);
-            if (user == null) 
-            {
-                newUser = new ChatUser
-                {
-                    Id = Guid.NewGuid(),
-                    Username = dto.Username,
-                    ChatLists = new List<ChatsList>()
-                };
-
-                _dbService.ChatUsers.Add(newUser);
-                _dbService.SaveChanges();
-            }
+            _chatUserAction.AddChatUser(dto);
             return;
         }
         [HttpGet("find")]
         public ChatUser FindUser([FromQuery] string Username)
         {
-            var user = _dbService.ChatUsers
-                .FirstOrDefault(x => x.Username == Username);
-            return user;
+            return _chatUserAction.FindUser(Username);
         }
         
 

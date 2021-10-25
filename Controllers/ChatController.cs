@@ -8,147 +8,56 @@ using ChatAPI.Data.Models;
 using ChatAPI.Data.Dto;
 using Microsoft.EntityFrameworkCore;
 
+using ChatAPI.Servises.Abstract;
+
 namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private readonly DbService _dbService;
-        public ChatController(DbService dbService)
+        private readonly IChatAction _chatAction;
+        public ChatController(IChatAction chatAction)
         {
-            _dbService = dbService;
+            _chatAction = chatAction;
         }
 
         [HttpGet]
         public IEnumerable<Chat> GetUserChats()
         {
-            List<Chat> chats = null;
-            chats = _dbService.Chats.Include(x => x.ChatsList).ToList();
-            return chats;
+            return _chatAction.GetUserChats();
         }
 
         [HttpPost("add")]
         public Chat AddChat(ChatAddDto dto)
         {
-            Chat chat = null;
-            List<Chat> chats1 = _dbService.ChatsList.Include(x => x.ChatUser).Include(x => x.Chat).Where(x => x.ChatUser.Id == dto.UserId1).Select(x => x.Chat).ToList();
-            List<Chat> chats2 = _dbService.ChatsList.Include(x => x.ChatUser).Include(x => x.Chat).Where(x => x.ChatUser.Id == dto.UserId2).Select(x => x.Chat).ToList();
-            bool chkiquel = false;
-            foreach (Chat item1 in chats1)
-            {
-                foreach (Chat item2 in chats2)
-                {
-                    if (item1.ChatId == item2.ChatId)
-                    {
-                        chkiquel = true;
-                        break;
-                    }
-                }
-                if (chkiquel) break;
-            }
-            
-            if (!chkiquel)
-            {
-                ChatUser user1 = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId1);
-                ChatUser user2 = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId2);
-                chat = new Chat
-                {
-                    ChatId = Guid.NewGuid(),
-                    ChatName = user1.Username + " / " + user2.Username,
-                    LastData = DateTime.Today
-                };
-                _dbService.Chats.Add(chat);
-                _dbService.SaveChanges();
-
-                ChatsList chatlist1 = new ChatsList
-                {
-                    Id = Guid.NewGuid(),
-                    ChatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId1),
-                    Chat = _dbService.Chats.FirstOrDefault(x=> x.ChatId == chat.ChatId),
-                    Current = DateTime.Now
-                };
-                _dbService.ChatsList.Add(chatlist1);
-                ChatsList chatlist2 = new ChatsList
-                {
-                    Id = Guid.NewGuid(),
-                    ChatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == dto.UserId2),
-                    Chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == chat.ChatId),
-                    Current = DateTime.Now
-                };
-                if (user1.ChatLists == null) 
-                {
-                    user1.ChatLists = new List<ChatsList>();
-                }
-                if (user2.ChatLists == null)
-                {
-                    user2.ChatLists = new List<ChatsList>();
-                }
-                _dbService.ChatUsers.Update(user1);
-                _dbService.ChatUsers.Update(user2);
-                _dbService.SaveChanges();
-
-                user1.ChatLists.Add(chatlist1);
-                user2.ChatLists.Add(chatlist2);
-
-                _dbService.ChatsList.Add(chatlist2);
-                _dbService.ChatUsers.Update(user1);
-                _dbService.ChatUsers.Update(user2);
-                _dbService.SaveChanges();
-            }
-            return chat;
+            return _chatAction.AddChat(dto);
         }
+
         [HttpPost("adduser")]
-        public Chat AddUserToChatChat(Guid ChatId, Guid UserId)
+        public Chat AddUserToChatChat(Guid chatId, Guid userId)
         {
-            Chat chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == ChatId);
-            chat.ChatsList.Add(new ChatsList
-            {
-                Id = Guid.NewGuid(),
-                ChatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == UserId),
-                Chat = chat
-            });
-            return chat;
+            return _chatAction.AddUserToChatChat(chatId,userId);
         }
+
         [HttpGet("get")]
-        public IEnumerable<Chat> GetUserChats(Guid UserId)
+        public IEnumerable<Chat> GetUserChats(Guid userId)
         {
-            List<Chat> chats = new List<Chat>();
-            chats = _dbService.ChatsList.Where(x => x.ChatUser.Id == UserId).Select(x => x.Chat).ToList();
-            return chats;
+            return GetUserChats(userId);
         }
+
         [HttpGet("getchatusers")]
-        public IEnumerable<ChatUser> GetChatUsersChats(Guid ChatId)
+        public IEnumerable<ChatUser> GetChatUsersChats(Guid chatId)
         {
-            List<ChatUser> chats = null;
-            chats.Union(_dbService.ChatsList.Where(x => x.Chat.ChatId == ChatId).Select(x => x.ChatUser).ToList());
-            return chats;
+            return _chatAction.GetChatUsersChats(chatId);
         }
+
         //Change Chat name
         [HttpPost("chatname")]
         public void SetChatName(ChatChangeNameDto dto)
         {
-            if (dto.ChatName.Length > 5)
-            {
-                Chat chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == dto.ChatId);
-                chat.ChatName = dto.ChatName;
-                _dbService.Chats.Update(chat);
-                _dbService.SaveChanges();
-            }
+            _chatAction.SetChatName(dto);
             return;
         }
-        //[HttpPost("deletechat")]
-        //public Chat DeleteChat(Guid ChatId)
-        //{
-
-        //    Chat chat = _dbService.Chats.FirstOrDefault(x => x.ChatId == ChatId);
-        //    chat.ChatsList.Add(new ChatsList
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        ChatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Id == UserId),
-        //        Chat = chat
-        //    });
-        //    return chat;
-        //}
     }
 }

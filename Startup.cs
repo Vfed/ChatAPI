@@ -8,7 +8,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using ChatAPI.Servises.Abstract;
+using ChatAPI.Servises.Specific;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +26,7 @@ namespace ChatAPI
         {
             Configuration = configuration;
         }
+        
 
         public IConfiguration Configuration { get; }
 
@@ -38,10 +42,16 @@ namespace ChatAPI
             {
                 o.AllowEmptyInputInBodyModelBinding = true;
             })
+
             .AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
+
+            services.AddScoped<IChatAction, ChatAction>();
+            services.AddTransient<IChatsListAction, ChatsListAction>();
+            services.AddTransient<IChatUserAction, ChatUserAction>();
+            services.AddScoped<IMessageAction, MessageAction>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,7 +61,6 @@ namespace ChatAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
 
             app.UseAuthorization();
