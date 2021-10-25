@@ -1,0 +1,4 @@
+before_build:
+  - cmd: ECHO thisss is batch
+  - ps: Write-Host "This is PowerShell"
+  - pwsh: Write-Host "This is PowerShell Core"
