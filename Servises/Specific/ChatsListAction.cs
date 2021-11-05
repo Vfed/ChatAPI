@@ -18,8 +18,7 @@ namespace ChatAPI.Servises.Specific
         }
         public IEnumerable<ChatsList> GetUserChats()
         {
-            List<ChatsList> chats = new List<ChatsList>();
-            chats = _dbService.ChatsList.ToList();
+            List<ChatsList> chats = _dbService.ChatsList.ToList();
             return chats;
         }
         public DateTime GetCurrentDataChats(Guid userId, Guid chatId)
