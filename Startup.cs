@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http;
 
 namespace ChatAPI
 {
@@ -39,7 +40,7 @@ namespace ChatAPI
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DbConnection"));
             });
-
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
@@ -60,6 +61,7 @@ namespace ChatAPI
             services.AddTransient<IChatUserAction, ChatUserAction>();
             services.AddScoped<IMessageAction, MessageAction>();
 
+            services.AddHttpContextAccessor();
             services.AddControllers(o =>
             {
                 o.AllowEmptyInputInBodyModelBinding = true;

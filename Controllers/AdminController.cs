@@ -25,14 +25,20 @@ namespace ChatAPI.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly AdminUser adminUser = new AdminUser { Id = new Guid(), Username = "Admin7", Password = "@DogPas" };
+        private readonly List<AdminUser> adminUsers = new List<AdminUser>() {
+            new AdminUser{ Id = new Guid(), Username = "Admin7", Password = "12345" },
+            new AdminUser{ Id = new Guid(), Username = "Admin008", Password = "12345" }
+        };
+
+        private readonly AdminUser adminUser = new AdminUser { Id = new Guid(), Username = "Admin7", Password = "12345" };
         private readonly DbService _dbService;
-        public AdminController(DbService dbService)
+        private readonly IHttpContextAccessor _contextAccessor;
+        public AdminController(DbService dbService, IHttpContextAccessor contextAccessor)
         {
             _dbService = dbService;
+            _contextAccessor = contextAccessor;
         }
 
-        [Authorize]
         [Route("getlogin")]
         public IActionResult GetUsername()
         {
@@ -52,7 +58,21 @@ namespace ChatAPI.Controllers
         {
             return adminUser;
         }
-        
+
+        //public int GetUserId() =>
+        //    Convert.ToInt32(_contextAccessor.HttpContext.User.FindFirst("UserId")?.Value ?? "0");
+
+        //public string GetUserRole() =>
+        //    _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+
+        [Authorize]
+        [HttpGet("gettokens")]
+        public IActionResult WorkWithTokens()
+        {
+            return Ok(_contextAccessor.HttpContext.User.Claims.ToList());
+        }
+
+
         [HttpPost("token")]
             public IActionResult Token(AdminUserDto dto)
             {
@@ -83,7 +103,7 @@ namespace ChatAPI.Controllers
 
             private ClaimsIdentity GetIdentity(string username, string password)
             {
-            AdminUser person = adminUser.Username == username && adminUser.Password == password ? adminUser : null;
+            AdminUser person = adminUsers.Find(x => x.Username == username && x.Password == password);
                 if (person != null)
                 {
                     var claims = new List<Claim>
@@ -95,6 +115,7 @@ namespace ChatAPI.Controllers
                         ClaimsIdentity.DefaultRoleClaimType);
                     return claimsIdentity;
                 }
+                
                 return null;
             }
         }

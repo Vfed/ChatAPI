@@ -13,7 +13,7 @@ namespace ChatAPI.Servises.Abstract
         public IEnumerable<Chat> GetUserChats();
         public Chat AddChat(ChatAddDto dto);
         public Chat AddUserToChatChat(Guid chatId, Guid userId);
-        public IEnumerable<Chat> GetUserChats(Guid userId);
+        public List<Chat> GetUserChats(Guid userId);
         public IEnumerable<ChatUser> GetChatUsersChats(Guid chatId);
         public void SetChatName(ChatChangeNameDto dto);
     }

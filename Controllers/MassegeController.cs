@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using ChatAPI.Data.Dto;
 using ChatAPI.Data.Models;
 using ChatAPI.Servises.Abstract;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MassegeController : ControllerBase
     {
         private readonly IMessageAction _messageAction;

@@ -103,16 +103,14 @@ namespace ChatAPI.Servises.Specific
             });
             return chat;
         }
-        public IEnumerable<Chat> GetUserChats(Guid userId)
+        public List<Chat> GetUserChats(Guid userId)
         {
-            List<Chat> chats = new List<Chat>();
-            chats = _dbService.ChatsList.Where(x => x.ChatUser.Id == userId).Select(x => x.Chat).ToList();
+            List<Chat> chats = _dbService.ChatsList.Where(x => x.ChatUser.Id == userId).Select(x => x.Chat).ToList();
             return chats;
         }
         public IEnumerable<ChatUser> GetChatUsersChats(Guid chatId)
         {
-            List<ChatUser> chats = null;
-            chats.Union(_dbService.ChatsList.Where(x => x.Chat.ChatId == chatId).Select(x => x.ChatUser).ToList());
+            List<ChatUser> chats =  _dbService.ChatsList.Where(x => x.Chat.ChatId == chatId).Select(x => x.ChatUser).ToList();
             return chats;
         }
         //Change Chat name

@@ -10,5 +10,13 @@ namespace ChatAPI.Data.Models
         [Key] public Guid Id { get; set; }
         public string Username { get; set; }
         public List<ChatsList> ChatLists { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; }
+        public ChatUser()
+        {
+            Role = "user";
+            Password = "12345";
+        }
+
     }
 }

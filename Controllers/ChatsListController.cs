@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using ChatAPI.Data.Models;
 using ChatAPI.Data.Dto;
 using ChatAPI.Servises.Abstract;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ChatsListController : ControllerBase
     {

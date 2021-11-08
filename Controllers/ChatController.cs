@@ -9,10 +9,12 @@ using ChatAPI.Data.Dto;
 using Microsoft.EntityFrameworkCore;
 
 using ChatAPI.Servises.Abstract;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ChatController : ControllerBase
     {
@@ -43,7 +45,7 @@ namespace ChatAPI.Controllers
         [HttpGet("get")]
         public IEnumerable<Chat> GetUserChats(Guid userId)
         {
-            return GetUserChats(userId);
+            return _chatAction.GetUserChats(userId);
         }
 
         [HttpGet("getchatusers")]
