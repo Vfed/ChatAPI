@@ -12,11 +12,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using ChatAPI.Servises.Abstract;
 using ChatAPI.Servises.Specific;
+using ChatAPI.Data.Authorize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ChatAPI
 {
@@ -26,7 +29,6 @@ namespace ChatAPI
         {
             Configuration = configuration;
         }
-        
 
         public IConfiguration Configuration { get; }
 
@@ -38,20 +40,34 @@ namespace ChatAPI
                 options.UseSqlServer(Configuration.GetConnectionString("DbConnection"));
             });
 
-            services.AddControllers(o =>
-            {
-                o.AllowEmptyInputInBodyModelBinding = true;
-            })
-
-            .AddNewtonsoftJson(o =>
-            {
-                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = AuthOptions.ISSUER,ValidateAudience = true,
+                            ValidAudience = AuthOptions.AUDIENCE,
+                            ValidateLifetime = true,
+                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                            ValidateIssuerSigningKey = true,
+                        };
+                    });
 
             services.AddScoped<IChatAction, ChatAction>();
             services.AddTransient<IChatsListAction, ChatsListAction>();
             services.AddTransient<IChatUserAction, ChatUserAction>();
             services.AddScoped<IMessageAction, MessageAction>();
+
+            services.AddControllers(o =>
+            {
+                o.AllowEmptyInputInBodyModelBinding = true;
+            })
+            .AddNewtonsoftJson(o =>
+            {
+                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,8 +79,9 @@ namespace ChatAPI
             }
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
