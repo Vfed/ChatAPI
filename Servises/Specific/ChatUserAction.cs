@@ -72,7 +72,7 @@ namespace ChatAPI.Servises.Specific
         }
         public IEnumerable<ChatUser> GetChatUser()
         {
-            return _dbService.ChatUsers.Include(x => x.ChatLists).ToList();
+            return _dbService.ChatUsers.Include(x => x.ChatLists);
         }
 
         //Login User -> give him Token or null

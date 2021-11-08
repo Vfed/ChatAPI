@@ -9,6 +9,7 @@ namespace ChatAPI
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<ChatsList> ChatsList { get; set; }
+        public DbSet<AdminUser> AdminUsers { get; set; }
         public DbService(DbContextOptions<DbService> options) : base(options)
         { }
     }

@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 using ChatAPI.Servises.Abstract;
 using ChatAPI.Servises.Specific;
 using ChatAPI.Data.Authorize;
@@ -21,6 +24,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http;
+
+using ChatAPI.Data.Authorize;
 
 namespace ChatAPI
 {

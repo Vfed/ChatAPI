@@ -81,7 +81,7 @@ namespace ChatAPI.Controllers
                 {
                     return BadRequest(new { errorText = "Invalid username or password." });
                 }
-                
+
                 var now = DateTime.UtcNow;
                 var jwt = new JwtSecurityToken(
                         issuer: AuthOptions.ISSUER,
@@ -100,6 +100,7 @@ namespace ChatAPI.Controllers
 
                 return Ok(response);
             }
+
 
             private ClaimsIdentity GetIdentity(string username, string password)
             {
