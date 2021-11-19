@@ -21,11 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http;
-
-using ChatAPI.Data.Authorize;
 
 namespace ChatAPI
 {
@@ -61,10 +56,15 @@ namespace ChatAPI
                         };
                     });
 
+            //Add Background Service
+            services.AddHostedService< TimedHostedService >();
+            services.AddScoped<IScopedHostedService, ScopedHostedService>();
+            services.AddSingleton<ILocaLDataService,LocaLDataService>();
+
+            services.AddScoped<IMessageAction, MessageAction>();
             services.AddScoped<IChatAction, ChatAction>();
             services.AddTransient<IChatsListAction, ChatsListAction>();
             services.AddTransient<IChatUserAction, ChatUserAction>();
-            services.AddScoped<IMessageAction, MessageAction>();
 
             services.AddHttpContextAccessor();
             services.AddControllers(o =>

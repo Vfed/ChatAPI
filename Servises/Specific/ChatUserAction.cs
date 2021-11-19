@@ -36,7 +36,8 @@ namespace ChatAPI.Servises.Specific
                     Username = dto.Username,
                     ChatLists = new List<ChatsList>(),
                     Password = dto.Password,
-                    Role = "user"
+                    Role = "user",
+                    LastActionTime = DateTime.MinValue
                 };
                 _dbService.ChatUsers.Add(newUser);
                 _dbService.SaveChanges();
@@ -57,8 +58,8 @@ namespace ChatAPI.Servises.Specific
 
         public bool CheckUserExistens(string username)
         {
-            var user = _dbService.ChatUsers
-                .FirstOrDefault(x => x.Username == username);
+            
+            ChatUser user = _dbService.ChatUsers.Where(x => x.Username == username).FirstOrDefault();
             return user != null;
         }
 
@@ -109,6 +110,9 @@ namespace ChatAPI.Servises.Specific
             ChatUser chatUser = _dbService.ChatUsers.FirstOrDefault(x => x.Username == username && x.Password == password);
             if (chatUser != null)
             {
+                chatUser.LastActionTime = DateTime.Now;
+                _dbService.SaveChanges();
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, chatUser.Username),

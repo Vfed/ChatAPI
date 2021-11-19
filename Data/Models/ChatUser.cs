@@ -12,11 +12,7 @@ namespace ChatAPI.Data.Models
         public List<ChatsList> ChatLists { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
-        public ChatUser()
-        {
-            Role = "user";
-            Password = "12345";
-        }
+        public DateTime LastActionTime { get; set; }
 
     }
 }

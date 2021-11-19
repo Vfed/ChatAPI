@@ -18,6 +18,8 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using ChatAPI.Servises.Specific;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ChatAPI.Controllers
 {
@@ -33,10 +35,21 @@ namespace ChatAPI.Controllers
         private readonly AdminUser adminUser = new AdminUser { Id = new Guid(), Username = "Admin7", Password = "12345" };
         private readonly DbService _dbService;
         private readonly IHttpContextAccessor _contextAccessor;
-        public AdminController(DbService dbService, IHttpContextAccessor contextAccessor)
+        private readonly IServiceProvider _services;
+
+        public AdminController(DbService dbService, IHttpContextAccessor contextAccessor, IServiceProvider services)
         {
             _dbService = dbService;
             _contextAccessor = contextAccessor;
+            _services = services;
+        }
+
+        [HttpGet("getcounter")]
+        public IActionResult GetBackgroundCounter()
+        {         
+            var countService = _services.GetRequiredService<ILocaLDataService>();
+            int count = countService.GetUsersOnline();
+            return Ok("Actice users: "+ count);
         }
 
         [Route("getlogin")]
